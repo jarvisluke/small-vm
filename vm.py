@@ -46,9 +46,16 @@ class vm:
             for line in f.readlines():
                 # checks if line is a comment
                 if ';' not in line:
-                    self._memory.append(line.replace('\n', ''))
+                    # removes \n from line if present
+                    if line[-1] == '\n':
+                        self._memory.append(line.replace('\n', ''))
+                    else:
+                        self._memory.append(line)
                 elif line[0] != ';':
-                    self._memory.append(line[:line.find(';')])
+                    # removes comment from line
+                    line = line[:line.find(';')]
+                    if not line.isspace():
+                        self._memory.append(line)
         except FileNotFoundError:
             print(f'File: {file} not found')
 
@@ -85,7 +92,7 @@ class vm:
                 self._in(args[0])
             case 'OUT':
                 self._out(self.parse(line[line.find(' ') + 1:]))
-            case 'HALT' | 'HAL':
+            case 'HALT':
                 quit(0)
             # default case from unknown operation name
             case _:
