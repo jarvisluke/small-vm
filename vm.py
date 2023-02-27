@@ -1,10 +1,27 @@
+"""
+Luke Jarvis
+2/26/2023
+"""
+import datetime
+
+
 class vm:
     _memory: list[str] = []
     _heap: dict[str, int] = {}
+    # filename with timestamp ending in minute
+    _file = 'vm_output_'+datetime.datetime.now().strftime('%x:%X').replace(':', '').replace('/', '.')[:-2]+'.txt'
 
     # creates new vm, calls load_to_memory()
     def __init__(self, file: str):
-        self.load_to_memory(file=file)
+        self._load_to_memory(file)
+        open(self._file, 'x')
+
+    # writes output to file and terminal
+    def _print_out(self, output):
+        output = str(output)
+        f = open(self._file, 'a')
+        f.write(output+'\n')
+        print(output)
 
     # stores the sum of num1 and num2 as name
     def _add(self, name: str, num1: int, num2: int) -> None:
@@ -32,30 +49,25 @@ class vm:
 
     # stores input as name
     def _in(self, name: str) -> None:
-        self._heap.update({name: int(input())})
+        i = int(input())
+        self._print_out(i)
+        self._heap.update({name: i})
 
     # prints output
     def _out(self, output: str) -> None:
-        print(output)
+        self._print_out(output)
 
     # loads instructions in file to memory
-    def load_to_memory(self, file: str) -> None:
+    def _load_to_memory(self, file: str) -> None:
         try:
             f = open(file, 'r')
             # adds each instruction in file to memory
             for line in f.readlines():
                 # checks if line is a comment
                 if ';' not in line:
-                    # removes \n from line if present
-                    if line[-1] == '\n':
-                        self._memory.append(line.replace('\n', ''))
-                    else:
-                        self._memory.append(line)
+                    self._memory.append(line.replace('\n', ''))
                 elif line[0] != ';':
-                    # removes comment from line
-                    line = line[:line.find(';')]
-                    if not line.isspace():
-                        self._memory.append(line)
+                    self._memory.append(line[:line.find(';')])
         except FileNotFoundError:
             print(f'File: {file} not found')
 
@@ -92,7 +104,7 @@ class vm:
                 self._in(args[0])
             case 'OUT':
                 self._out(self.parse(line[line.find(' ') + 1:]))
-            case 'HALT':
+            case 'HALT' | 'HAL':
                 quit(0)
             # default case from unknown operation name
             case _:
