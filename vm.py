@@ -9,7 +9,7 @@ class vm:
     _memory: list[str] = []
     _heap: dict[str, int] = {}
     # filename with timestamp ending in minute
-    _file = 'vm_output_'+datetime.datetime.now().strftime('%x:%X').replace(':', '').replace('/', '.')[:-2]+'.txt'
+    _file = 'vm_output_'+datetime.datetime.now().strftime('%x-%X').replace(':', '.').replace('/', '.')+'.txt'
 
     # creates new vm, calls load_to_memory()
     def __init__(self, file: str):
